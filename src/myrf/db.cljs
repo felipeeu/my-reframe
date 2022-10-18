@@ -1,9 +1,27 @@
 (ns myrf.db)
 
 (def default-db
-  {:products  [{:name "spinner" :quantity 0 :inventory 10  :id "1"}
-               {:name "mush mush" :quantity 0 :inventory 15 :id "2"}
-               {:name "sensorial tube" :quantity 0 :inventory 6 :id "3"}
-               {:name "peanut" :quantity 0 :inventory 8 :id "4"}]})
-
-
+  {:products  {"1" {:name "spinner"
+                    :quantity 0
+                    :inventory 10
+                    :image "no-image.png"
+                    :id "1"
+                    :price 20}
+               "2" {:name "mush mush"
+                    :quantity 0
+                    :inventory 15
+                    :image "no-image.png"
+                    :id "2"
+                    :price 14.8}
+               "3"  {:name "sensorial tube"
+                     :quantity 0
+                     :inventory 6
+                     :image "no-image.png"
+                     :id "3"
+                     :price 10.2}
+               "4" {:name "peanut"
+                    :quantity 0
+                    :inventory 8
+                    :image "no-image.png"
+                    :id "4"
+                    :price 15.22}}})
