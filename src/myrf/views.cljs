@@ -26,6 +26,15 @@
   [style]
   [:div {:style (style styles)}])
 
+(defn cart-component
+  "represent a cart of products"
+  [product-id]
+  (let [cart @(re-frame/subscribe [::subs/cart])
+        cart-quantity @(re-frame/subscribe [::subs/cart-quantity product-id])
+        name @(re-frame/subscribe [::subs/name product-id])]
+    (js/console.log "cart", cart)
+    [:div {:key (str name product-id)} name cart-quantity]))
+
 (defn quantity-component
   [product-id]
   (let [quantity  @(re-frame/subscribe [::subs/quantity product-id])
@@ -40,25 +49,34 @@
   "represent a single product"
   [product-id]
   (let [image-style (:image-style styles)
-        name (re-frame/subscribe [::subs/name product-id])
-        price (re-frame/subscribe [::subs/price product-id])]
+        name @(re-frame/subscribe [::subs/name product-id])
+        price @(re-frame/subscribe [::subs/price product-id])
+        quantity  @(re-frame/subscribe [::subs/quantity product-id])]
     [:div {:key (str name product-id)}
      [:img {:src "no-image.png" :style image-style}]
-     [:p  @name]
-     [:p (str "$"  @price)]
-     [:button "buy"]
+     [:p  name]
+     [:p (str "$"  price)]
+     [:button  {:on-click #(re-frame.core/dispatch [::events/add-to-cart product-id quantity])} "add to cart"]
      (quantity-component product-id)]))
 
 (defn render-products
   []
-  (let [ids  (re-frame/subscribe [::subs/list-products-ids])]
+  (let [ids  @(re-frame/subscribe [::subs/list-products-ids])]
     [:div {:style (:grid-style styles)}
-     (doall (map  #(product %)  @ids))]))
+     (doall (map  #(product %)  ids))]))
+
+(defn render-cart
+  []
+  (let [ids  @(re-frame/subscribe [::subs/list-cart-products-ids])]
+    [:div {:style (:grid-style styles)}
+     (doall (map  #(cart-component %)  ids))]))
 
 (defn main-panel
   []
   [:div
    (component :header-style)
+
    [:div {:style (:body-style styles)}
-    (render-products)]
+    (render-products)
+    (render-cart)]
    (component :footer-style)])
