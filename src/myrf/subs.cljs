@@ -28,12 +28,6 @@
    (keys (:products db))))
 
 (re-frame/reg-sub
- ::cart
- (fn [db [_ product-id quantity]]
-   (js/console.log "DB: ", db)
-   (get-in db [:cart])))
-
-(re-frame/reg-sub
  ::cart-quantity
  (fn [db [_ product-id]]
    (get-in db [:cart product-id :quantity])))
@@ -42,3 +36,13 @@
  ::list-cart-products-ids
  (fn [db]
    (keys (:cart db))))
+
+(re-frame/reg-sub
+ ::modal-opened
+ (fn [db]
+   (get-in db [:modal-opened :status])))
+
+(re-frame/reg-sub
+ ::modal-opened-id
+ (fn [db]
+   (get-in db [:modal-opened :id])))
