@@ -29,4 +29,5 @@
                     :id "4"
                     :price 15.22
                     :cart-added false}}
-   :cart {}})
+   :cart {}
+   :modal-opened {}})
