@@ -15,7 +15,9 @@
      [:section {:class "modal-card-body"}
       (quantity-component modal-opened-id quantity)]
      [:footer {:class "modal-card-foot"}
-      [:button {:on-click #(re-frame.core/dispatch [::events/add-to-cart modal-opened-id quantity])} "add to cart"]]]))
+      [:button {:on-click #(re-frame.core/dispatch [::events/add-to-cart modal-opened-id quantity])
+                :class "button is-success"} "Add to cart"]
+      [:button {:on-click #(re-frame.core/dispatch [::events/close-modal]) :class "button"} "Cancel"]]]))
 
 (defn modal-generic
   [title modal-opened-id is-active modal-type]
