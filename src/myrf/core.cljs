@@ -1,11 +1,11 @@
 (ns myrf.core
   (:require
-   [reagent.dom :as rdom]
-   [re-frame.core :as re-frame]
+   [myrf.config :as config]
    [myrf.events :as events]
    [myrf.views :as views]
-   [myrf.config :as config]
-   ))
+   [myrf.router :as router]
+   [re-frame.core :as re-frame]
+   [reagent.dom :as rdom]))
 
 
 (defn dev-setup []
@@ -19,6 +19,7 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
+  (router/start!)
   (re-frame/dispatch-sync [::events/initialize-db])
   (dev-setup)
   (mount-root))
