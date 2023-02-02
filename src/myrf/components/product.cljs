@@ -2,7 +2,8 @@
   (:require  [re-frame.core :as re-frame]
              [myrf.subs :as subs]
              [myrf.events :as events]
-             [myrf.router :as router]))
+             [myrf.router :as router]
+             [myrf.utils.price :refer [format-price]]))
 
 (defn add-to-cart-button
   "A button to add products to cart"
@@ -26,5 +27,5 @@
                      :background "pink"}}
        [:img {:src "no-image.png" :style {:width 80}}]
        [:p {:class "is-family-primary"} name]
-       [:p {:class "is-family-code"} (str "$"  price)]]]]))
+       [:p {:class "is-family-code"} (format-price  price)]]]]))
 

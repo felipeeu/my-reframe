@@ -2,7 +2,8 @@
   (:require
    [myrf.subs :as subs]
    [re-frame.core :as re-frame]
-   [myrf.components.quantity-selector :refer [change-quantity-buttons]]))
+   [myrf.components.quantity-selector :refer [change-quantity-buttons]]
+   [myrf.utils.price :refer [format-price]]))
 
 
 (defn cart-component
@@ -19,8 +20,8 @@
      [:td
       [:p {:class "is-family-primary"} name]]
      [:td
-      [:p {:class "is-family-primary"} price]]
+      [:p {:class "is-family-primary"} (format-price price)]]
      [:td
       [:p {:class "is-family-primary"} [change-quantity-buttons cart-quantity product-id "cart-quantity"]]]
      [:td
-      [:p {:class "is-family-primary"} total]]]))
+      [:p {:class "is-family-primary"} (format-price total)]]]))
