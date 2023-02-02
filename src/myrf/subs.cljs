@@ -46,3 +46,13 @@
  ::modal-opened-id
  (fn [db]
    (get-in db [:modal-opened :id])))
+
+(re-frame/reg-sub
+ ::active-page
+ (fn [db _]
+   (:active-page db)))
+
+(re-frame/reg-sub
+ ::selected-product
+ (fn [db]
+   (:selected db)))

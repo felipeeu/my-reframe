@@ -29,5 +29,5 @@
                     :id "4"
                     :price 15.22
                     :cart-added false}}
-   :cart {}
+   :cart {"4" {:quantity 2}}
    :modal-opened {}})

@@ -1,9 +1,7 @@
 (ns myrf.events
   (:require
    [re-frame.core :as re-frame]
-   [myrf.db :as db]
-  ;;  [day8.re-frame.tracing :refer-macros [fn-traced]]
-   ))
+   [myrf.db :as db]))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -16,6 +14,11 @@
    (assoc-in db [:products product-info :quantity] (action quantity))))
 
 (re-frame/reg-event-db
+ ::update-cart-quantity
+ (fn [db [_ product-info quantity action]]
+   (assoc-in db [:cart product-info :quantity] (action quantity))))
+
+(re-frame/reg-event-db
  ::reset-quantity
  (fn [db [_ product-info]]
    (assoc-in db [:products product-info :quantity] 0)))
@@ -26,19 +29,13 @@
    (assoc-in db [:products product-info :cart-added] status)))
 
 (re-frame/reg-event-fx
- ::show-modal
- (fn [{:keys [db]} [_ product-info]]
-   {:db (assoc-in db [:modal-opened] {:status "is-active" :id product-info})}))
-
-
-(re-frame/reg-event-fx
  ::add-to-cart
  (fn [{:keys [db]} [_ product-info quantity]]
    (let [cart-db  {product-info {:quantity quantity}}]
-     {:db  (assoc db :cart
-                  (conj  (:cart db) cart-db))
-      :fx [[:dispatch [::register-cart-status product-info true]]
-           [:dispatch [::show-modal product-info]]]})))
+     (if (> quantity 0)
+       {:db  (assoc db :cart
+                    (conj  (:cart db) cart-db))
+        :fx [[:dispatch [::register-cart-status product-info true]]]} nil))))
 
 (re-frame/reg-event-fx
  ::remove-from-cart
@@ -49,3 +46,18 @@
                      (conj  (:cart db) cart-db))
         :fx [[:dispatch [::register-cart-status product-info false]]]}
        nil))))
+
+(re-frame/reg-event-fx
+ ::set-active-page
+ (fn [{:keys [db]} [_ {:keys [page slug]}]]
+   (let [set-page (assoc db :active-page page)]
+     (case page
+       :home {:db set-page}
+       :cart {:db set-page}
+       :login {:db set-page}
+       :product  {:db (assoc set-page :active-product slug)}))))
+
+(re-frame/reg-event-db
+ ::select-product
+ (fn [db [_ product-info]]
+   (assoc-in db [:selected] product-info)))
