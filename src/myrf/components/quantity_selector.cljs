@@ -10,7 +10,7 @@
   (let [event-key  (if (= "cart-quantity" quantity-type)
                      ::events/update-cart-quantity
                      ::events/update-quantity)]
-    (re-frame.core/dispatch [event-key (first params) (second params) (last params)])))
+    (re-frame.core/dispatch (apply conj [] event-key params))))
 
 (defn change-quantity-buttons
   "buttons to edit quantity"
