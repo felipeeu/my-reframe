@@ -5,43 +5,37 @@
    [myrf.router :as router]
    [myrf.components.cart :refer [cart-component]]
    [myrf.components.product :refer [product add-to-cart-button]]
-   [myrf.components.quantity-selector :refer [quantity-component]]))
+   [myrf.components.quantity-selector :refer [quantity-component]]
+   [myrf.utils.price :refer [format-price]]))
+
 
 (defn header
   []
-  [:nav {:class "level"}
-   [:a {:href (router/url-for :home)} [:p "back"]]
-   [:a {:href (router/url-for :login)
-        :class "level-item"} "login"]
-   [:input {:class "level-item"}]
-   [:a {:href (router/url-for :cart)
-        :class "level-item"} "cart"]])
+  [:nav
+   [:ul
+    [:li [:a {:href (router/url-for :home)}  "back"]]
+    [:li [:a {:href (router/url-for :login)} "login"]]
+    [:li [:a {:href (router/url-for :cart)} "cart"]]
+    [:li [:input]]]])
 
-(defn hero
-  []
-  [:section {:class "hero is-primary"}
-   [:div {:class "hero-body"}
-    [:div {:class "container"}
-     [:h1 {:class "title"} "Testing Hero"]]]])
 
-(defn footer
+
+(defn footer-content
   []
-  [:footer {:class "footer"}
-   [:div {:class "content has-text-centered"}
-    [:p "fidge toys by Bulma"]]])
+  [:p "all-purpose store by Felipe Domingues"])
 
 
 (defn render-products
   []
   (let [ids  @(re-frame/subscribe [::subs/list-products-ids])]
-    [:div {:class "column is-flex"}
+    [:section {:class "row pt-2"}
      (doall (map  #(product %)  ids))]))
 
 (defn render-cart
   []
   (let [ids  @(re-frame/subscribe [::subs/list-cart-products-ids])]
-    [:div {:class "is-flex is-justify-content-center"}
-     [:table {:class "table is-fullwidth is-striped"}
+    [:div
+     [:table
       [:thead [:tr
                [:th "Product"]
                [:th "Name"]
@@ -60,37 +54,37 @@
         price @(re-frame/subscribe [::subs/price selected-product-id])
         quantity @(re-frame/subscribe [::subs/quantity selected-product-id])
         inventory @(re-frame/subscribe [::subs/inventory selected-product-id])]
-    [:section {:class "section is-fluid"}
-     [:h1 {:class "title"} name]
-     [:h2 {:class "subtitle"} "testing subtitle testing subtitle testing subtitle"]
-     [:div {:class "container is-flex"}
-      [:div {:class "section"} [:figure {:class "image is-96x96"}
-                                [:img {:src "no-image.png"}]]]
-      [:div {:class "section is-flex is-flex-direction-column is-justify-content-space-evenly"}
-       [:p {:class "has-text-weight-bold"}  "Price: "
-        [:span {:class "has-text-weight-normal"} (str "$" price)]]
-       [:p {:class "has-text-weight-bold"}  "Quantity: "
-        [:span {:class "has-text-weight-normal"}  quantity]]
-       [:p {:class "has-text-weight-bold"}  "Inventory: "
-        [:span {:class "has-text-weight-normal"}  inventory]]]
-      [:div {:class "section is-flex is-flex-direction-column is-justify-content-space-evenly"}
-       [quantity-component selected-product-id quantity]
-       [add-to-cart-button selected-product-id quantity]]]]))
+    [:div
+     [:h1 name]
+     [:h2  "testing subtitle testing subtitle testing subtitle"]
+     [:div
+      [:div  [:figure
+              [:img {:src "no-image.png"}]]]
+      [:section {:class "row"}
+       [:div
+        [:p [:h6 "Price:"]
+         [:span  (format-price  price)]]
+        [:p  [:h6 "Quantity:"]
+         [:span   quantity]]
+        [:p   [:h6 "Inventory:"]
+         [:span   inventory]]]
+       [:div
+        [quantity-component selected-product-id quantity]
+        [add-to-cart-button selected-product-id quantity]]]]]))
 
 (defn pages
   [page-name]
-  (case page-name
-    :home [render-products]
-    :cart [render-cart]
-    :product [product-panel]
-    [render-products]))
+  [:section
+   (case page-name
+     :home [render-products]
+     :cart [render-cart]
+     :product [product-panel]
+     [render-products])])
 
 (defn main-panel
   []
   (let [active-page @(re-frame/subscribe [::subs/active-page])]
-    [:div
-     (header)
-     [:div {:class "container"}
-      (pages active-page)]
-     (hero)
-     (footer)]))
+    [:div {:class "bg-secondary"}
+     [:header [header]]
+     [:section [pages active-page]]
+     [:footer [footer-content]]]))
