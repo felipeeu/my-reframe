@@ -8,7 +8,8 @@
 (defn add-to-cart-button
   "A button to add products to cart"
   [product-id quantity]
-  [:button {:on-click #(re-frame.core/dispatch [::events/add-to-cart product-id quantity])
+  [:button {:class "w-100"
+            :on-click #(re-frame.core/dispatch [::events/add-to-cart product-id quantity])
             :disabled (= quantity 0)} "Add to cart"])
 
 
@@ -18,10 +19,20 @@
   (let [name @(re-frame/subscribe [::subs/name product-id])
         price @(re-frame/subscribe [::subs/price product-id])]
     [:div {:key (str name product-id)
-           :class "col-4 w-25"}
+           :class "card m-2 col"}
      [:a {:href (router/url-for :product :product-id product-id)}
       [:div {:on-click #(re-frame/dispatch [::events/select-product product-id])}
        [:img {:src "no-image.png" :style {:width 80}}]
        [:h4  name]
        [:p (format-price  price)]]]]))
 
+(defn product-information
+  "Information that should appear when product is selected"
+  [quantity price inventory]
+  [:div {:class "col-6"}
+   [:p [:h6 {:class "pr-05"} "Price:"]
+    [:span  (format-price  price)]]
+   [:p  [:h6 {:class "pr-05"} "Quantity:"]
+    [:span   quantity]]
+   [:p   [:h6 {:class "pr-05"} "Inventory:"]
+    [:span   inventory]]])

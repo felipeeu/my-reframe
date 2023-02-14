@@ -1,22 +1,25 @@
 (ns myrf.views
   (:require
    [myrf.components.cart :refer [cart-component]]
-   [myrf.components.product :refer [add-to-cart-button product]]
+   [myrf.components.product :refer [add-to-cart-button product product-information]]
    [myrf.components.quantity-selector :refer [quantity-component]]
    [myrf.router :as router]
    [myrf.subs :as subs]
    [myrf.utils.constants :refer [products-columns]]
-   [myrf.utils.price :refer [format-price]]
    [re-frame.core :as re-frame]))
 
 (defn header
   []
-  [:nav
-   [:ul
-    [:li [:a {:href (router/url-for :home)}  "back"]]
-    [:li [:a {:href (router/url-for :login)} "login"]]
-    [:li [:a {:href (router/url-for :cart)} "cart"]]
-    [:li [:input]]]])
+  (let [cart-product-ids @(re-frame/subscribe [::subs/list-cart-products-ids])]
+    [:nav
+     [:ul
+      [:li [:a {:href (router/url-for :home)}  "back"]]
+      [:li [:a {:href (router/url-for :login)} "login"]]
+
+      [:li [:input]]
+      (if (empty? cart-product-ids) nil
+          [:li {:class "pr-2 mt-05 float-right"}
+           [:a {:href (router/url-for :cart)}  "cart"]])]]))
 
 (defn footer-content
   []
@@ -28,8 +31,8 @@
   (let [ids  @(re-frame/subscribe [::subs/list-products-ids])]
     [:div
      (doall
-      (map (fn [%] [:section {:key (rand-int (count ids))
-                              :class "row pt-2"} %])
+      (map (fn [%] [:div {:key (rand-int (count ids))
+                          :class "row pt-2 text-center"} %])
            (partition columns
                       (map  #(product %) ids))))]))
 
@@ -56,21 +59,16 @@
         price @(re-frame/subscribe [::subs/price selected-product-id])
         quantity @(re-frame/subscribe [::subs/quantity selected-product-id])
         inventory @(re-frame/subscribe [::subs/inventory selected-product-id])]
-    [:div
-     [:h1 name]
-     [:h2  "testing subtitle testing subtitle testing subtitle"]
+    [:div {:class "mt-2 w-100 bg-white"}
+     [:h1 {:class "p-2 text-center"} name]
      [:div
-      [:div  [:figure
-              [:img {:src "no-image.png"}]]]
-      [:section {:class "row"}
-       [:div
-        [:p [:h6 "Price:"]
-         [:span  (format-price  price)]]
-        [:p  [:h6 "Quantity:"]
-         [:span   quantity]]
-        [:p   [:h6 "Inventory:"]
-         [:span   inventory]]]
-       [:div
+      [:figure [:img {:class "pt-2 align-center"
+                      :src "no-image.png"
+                      :style {:width "10rem"
+                              :height "auto"}}]]
+      [:div {:class "row w-50 mx-auto pb-2"}
+       [product-information quantity price inventory]
+       [:div {:class "col-6"}
         [quantity-component selected-product-id quantity]
         [add-to-cart-button selected-product-id quantity]]]]]))
 
@@ -85,7 +83,7 @@
 (defn main-panel
   []
   (let [active-page @(re-frame/subscribe [::subs/active-page])]
-    [:div {:class "bg-secondary"}
+    [:body {:class "bg-secondary"}
      [:header [header]]
      [pages active-page]
      [:footer [footer-content]]]))

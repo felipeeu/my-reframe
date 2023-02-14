@@ -16,11 +16,11 @@
   "Buttons to edit quantity"
   [quantity product-id quantity-type]
   (let [inventory @(re-frame/subscribe [::subs/inventory product-id])]
-    [:div
+    [:div {:class "text-center"}
      [:button {:on-click #(if  (< quantity inventory)
                             (event-by-quantity-type quantity-type product-id quantity inc)
                             nil)} "+"]
-     [:span quantity]
+     [:h6  quantity]
      [:button {:on-click #(if (> quantity 0)
                             (event-by-quantity-type quantity-type product-id quantity dec)
                             nil)} "-"]]))
@@ -29,7 +29,6 @@
 (defn quantity-component
   [product-id quantity]
   [:div
-   [:div
-    [change-quantity-buttons quantity product-id]]
-   [:div
-    [:button {:on-click #(re-frame.core/dispatch [::events/reset-quantity product-id])} "Clear"]]])
+   [change-quantity-buttons quantity product-id]
+   [:button {:class "w-100"
+             :on-click #(re-frame.core/dispatch [::events/reset-quantity product-id])} "Clear"]])
