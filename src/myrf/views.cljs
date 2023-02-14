@@ -1,6 +1,6 @@
 (ns myrf.views
   (:require
-   [myrf.components.cart :refer [cart-component]]
+   [myrf.components.cart :refer [cart-component cart-table]]
    [myrf.components.product :refer [add-to-cart-button product product-information]]
    [myrf.components.quantity-selector :refer [quantity-component]]
    [myrf.router :as router]
@@ -15,7 +15,6 @@
      [:ul
       [:li [:a {:href (router/url-for :home)}  "back"]]
       [:li [:a {:href (router/url-for :login)} "login"]]
-
       [:li [:input]]
       (if (empty? cart-product-ids) nil
           [:li {:class "pr-2 mt-05 float-right"}
@@ -30,25 +29,19 @@
   [columns]
   (let [ids  @(re-frame/subscribe [::subs/list-products-ids])]
     [:div
-     (doall
-      (map (fn [%] [:div {:key (rand-int (count ids))
-                          :class "row pt-2 text-center"} %])
-           (partition columns
-                      (map  #(product %) ids))))]))
+     (->> ids
+          (map  #(product %))
+          (partition columns)
+          (map (fn [%] [:div {:key (rand-int (count ids))
+                              :class "row pt-2 text-center"} %]))
+          (doall))]))
+
 
 (defn render-cart
   []
   (let [ids  @(re-frame/subscribe [::subs/list-cart-products-ids])]
-    [:div
-     [:table
-      [:thead [:tr
-               [:th "Product"]
-               [:th "Name"]
-               [:th "Price"]
-               [:th "Quantity"]
-               [:th "Total"]]]
-      [:tbody
-       (doall (map  #(cart-component %)  ids))]]]))
+    (if (empty? ids) nil
+        [cart-table ids])))
 
 ;------- product page ------ 
 
@@ -83,7 +76,7 @@
 (defn main-panel
   []
   (let [active-page @(re-frame/subscribe [::subs/active-page])]
-    [:body {:class "bg-secondary"}
+    [:div {:class "bg-secondary"}
      [:header [header]]
      [pages active-page]
      [:footer [footer-content]]]))
