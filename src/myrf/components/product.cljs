@@ -9,23 +9,19 @@
   "A button to add products to cart"
   [product-id quantity]
   [:button {:on-click #(re-frame.core/dispatch [::events/add-to-cart product-id quantity])
-            :class "button is-success"
             :disabled (= quantity 0)} "Add to cart"])
 
 
 (defn product
-  "represent a single product"
+  "Represent a single product"
   [product-id]
   (let [name @(re-frame/subscribe [::subs/name product-id])
         price @(re-frame/subscribe [::subs/price product-id])]
     [:div {:key (str name product-id)
-           :class "column"}
+           :class "col-4 w-25"}
      [:a {:href (router/url-for :product :product-id product-id)}
-      [:div {:class "box"
-             :on-click #(re-frame/dispatch [::events/select-product product-id])
-             :style {:cursor "pointer"
-                     :background "pink"}}
+      [:div {:on-click #(re-frame/dispatch [::events/select-product product-id])}
        [:img {:src "no-image.png" :style {:width 80}}]
-       [:p {:class "is-family-primary"} name]
-       [:p {:class "is-family-code"} (format-price  price)]]]]))
+       [:h4  name]
+       [:p (format-price  price)]]]]))
 

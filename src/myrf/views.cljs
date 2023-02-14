@@ -1,13 +1,13 @@
 (ns myrf.views
   (:require
-   [re-frame.core :as re-frame]
-   [myrf.subs :as subs]
-   [myrf.router :as router]
    [myrf.components.cart :refer [cart-component]]
-   [myrf.components.product :refer [product add-to-cart-button]]
+   [myrf.components.product :refer [add-to-cart-button product]]
    [myrf.components.quantity-selector :refer [quantity-component]]
-   [myrf.utils.price :refer [format-price]]))
-
+   [myrf.router :as router]
+   [myrf.subs :as subs]
+   [myrf.utils.constants :refer [products-columns]]
+   [myrf.utils.price :refer [format-price]]
+   [re-frame.core :as re-frame]))
 
 (defn header
   []
@@ -18,18 +18,20 @@
     [:li [:a {:href (router/url-for :cart)} "cart"]]
     [:li [:input]]]])
 
-
-
 (defn footer-content
   []
   [:p "all-purpose store by Felipe Domingues"])
 
-
 (defn render-products
-  []
+  "Render products and pass number of columns as parameters"
+  [columns]
   (let [ids  @(re-frame/subscribe [::subs/list-products-ids])]
-    [:section {:class "row pt-2"}
-     (doall (map  #(product %)  ids))]))
+    [:div
+     (doall
+      (map (fn [%] [:section {:key (rand-int (count ids))
+                              :class "row pt-2"} %])
+           (partition columns
+                      (map  #(product %) ids))))]))
 
 (defn render-cart
   []
@@ -74,17 +76,16 @@
 
 (defn pages
   [page-name]
-  [:section
-   (case page-name
-     :home [render-products]
-     :cart [render-cart]
-     :product [product-panel]
-     [render-products])])
+  (case page-name
+    :home [render-products products-columns]
+    :cart [render-cart]
+    :product [product-panel]
+    [render-products products-columns]))
 
 (defn main-panel
   []
   (let [active-page @(re-frame/subscribe [::subs/active-page])]
     [:div {:class "bg-secondary"}
      [:header [header]]
-     [:section [pages active-page]]
+     [pages active-page]
      [:footer [footer-content]]]))

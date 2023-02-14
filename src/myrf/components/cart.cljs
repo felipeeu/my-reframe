@@ -18,10 +18,10 @@
       [:img {:src "no-image.png"
              :style {:width "80px"}}]]
      [:td
-      [:p {:class "is-family-primary"} name]]
+      [:p name]]
      [:td
-      [:p {:class "is-family-primary"} (format-price price)]]
+      [:p (format-price price)]]
      [:td
-      [:p {:class "is-family-primary"} [change-quantity-buttons cart-quantity product-id "cart-quantity"]]]
+      [:div [change-quantity-buttons cart-quantity product-id "cart-quantity"]]]
      [:td
-      [:p {:class "is-family-primary"} (format-price total)]]]))
+      [:p (format-price total)]]]))

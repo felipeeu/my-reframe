@@ -38,16 +38,6 @@
    (keys (:cart db))))
 
 (re-frame/reg-sub
- ::modal-opened
- (fn [db]
-   (get-in db [:modal-opened :status])))
-
-(re-frame/reg-sub
- ::modal-opened-id
- (fn [db]
-   (get-in db [:modal-opened :id])))
-
-(re-frame/reg-sub
  ::active-page
  (fn [db _]
    (:active-page db)))

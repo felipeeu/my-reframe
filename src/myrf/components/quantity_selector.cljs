@@ -5,7 +5,7 @@
    [myrf.events :as events]))
 
 (defn event-by-quantity-type
-  "define the event if it is a quantity in cart or not"
+  "Define the event if it is a quantity in cart or not"
   [quantity-type & params]
   (let [event-key  (if (= "cart-quantity" quantity-type)
                      ::events/update-cart-quantity
@@ -13,26 +13,23 @@
     (re-frame.core/dispatch (apply conj [] event-key params))))
 
 (defn change-quantity-buttons
-  "buttons to edit quantity"
+  "Buttons to edit quantity"
   [quantity product-id quantity-type]
   (let [inventory @(re-frame/subscribe [::subs/inventory product-id])]
-    [:div {:class "container is-flex is-justify-content-center"}
+    [:div
      [:button {:on-click #(if  (< quantity inventory)
                             (event-by-quantity-type quantity-type product-id quantity inc)
-                            nil)
-               :class "button is-primary p-2"} "+"]
-     [:span {:class "p-3"} quantity]
+                            nil)} "+"]
+     [:span quantity]
      [:button {:on-click #(if (> quantity 0)
                             (event-by-quantity-type quantity-type product-id quantity dec)
-                            nil)
-               :class "button is-primary  p-2"} "-"]]))
+                            nil)} "-"]]))
 
 
 (defn quantity-component
   [product-id quantity]
-  [:div {:class "container is-flex is-flex-direction-column"}
-   [:div {:class "container is-flex is-justify-content-center"}
+  [:div
+   [:div
     [change-quantity-buttons quantity product-id]]
-   [:div {:class "container is-flex is-justify-content-center pt-3"}
-    [:button {:on-click #(re-frame.core/dispatch [::events/reset-quantity product-id])
-              :class "button is-warning "} "Clear"]]])
+   [:div
+    [:button {:on-click #(re-frame.core/dispatch [::events/reset-quantity product-id])} "Clear"]]])
