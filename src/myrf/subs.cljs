@@ -1,6 +1,7 @@
 (ns myrf.subs
   (:require
-   [re-frame.core :as re-frame]))
+   [re-frame.core :as re-frame]
+   [myrf.utils.helpers :refer [filter-by-name]]))
 
 (re-frame/reg-sub
  ::name
@@ -46,3 +47,8 @@
  ::selected-product
  (fn [db]
    (:selected db)))
+
+(re-frame/reg-sub
+ ::filtered-data
+ (fn [db]
+   (keys (filter-by-name db (:filtered db)))))

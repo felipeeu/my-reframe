@@ -26,7 +26,7 @@
 (re-frame/reg-event-db
  ::update-db
  (fn [db [_ _]]
-   (assoc-in db [:products] (increase-mocked-data db/default-db mocked-data 20))))
+   (assoc-in db [:products] (increase-mocked-data db/default-db mocked-data 38))))
 
 
 (re-frame/reg-event-db
@@ -75,3 +75,8 @@
  ::select-product
  (fn [db [_ product-info]]
    (assoc-in db [:selected] product-info)))
+
+(re-frame/reg-event-db
+ ::filter-by-name
+ (fn [db [_ name]]
+   (assoc-in db [:filtered] name)))
