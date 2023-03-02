@@ -7,6 +7,7 @@
 (def routes
   ["/" {"" :home
         "login"    :login
+        "register" :register
         "cart"     :cart
         "product/" {[:product-id] :product}}])
 
