@@ -3,10 +3,11 @@
    [re-frame.core :as re-frame]
    [myrf.utils.helpers :refer [filter-by-name]]))
 
+
 (re-frame/reg-sub
- ::name
+ ::title
  (fn [db [_ product-id]]
-   (get-in db [:products product-id :name])))
+   (get-in db [:products product-id :title])))
 
 (re-frame/reg-sub
  ::price
@@ -19,9 +20,9 @@
    (get-in db [:products product-id :quantity])))
 
 (re-frame/reg-sub
- ::inventory
+ ::image
  (fn [db [_ product-id]]
-   (get-in db [:products product-id :inventory])))
+   (get-in db [:products product-id :image])))
 
 (re-frame/reg-sub
  ::list-products-ids
@@ -52,3 +53,4 @@
  ::filtered-data
  (fn [db]
    (keys (filter-by-name db (:filtered db)))))
+
