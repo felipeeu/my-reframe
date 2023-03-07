@@ -28,20 +28,17 @@
  (fn [db [_ product-info]]
    (assoc-in db [:products product-info :quantity] 0)))
 
-(re-frame/reg-event-fx
+(re-frame/reg-event-db
  ::register-cart-status
- (fn [{:keys [db]} [_ product-info status]]
-   {:db (assoc-in db [:products product-info :cart-added] status)
-    ;; :fx [[:dispatch [::set-active-page :cart ""]]]
-    }))
+ (fn [db [_ product-info status]]
+   (assoc-in db [:products product-info :cart-added] status)))
 
 (re-frame/reg-event-fx
  ::add-to-cart
  (fn [{:keys [db]} [_ product-info quantity]]
    (let [cart-db  {product-info {:quantity quantity}}]
      (if (> quantity 0)
-       {:db  (assoc db :cart
-                    (conj  (:cart db) cart-db))
+       {:db  (assoc db :cart cart-db)
         :fx [[:dispatch [::register-cart-status product-info true]]]} nil))))
 
 
