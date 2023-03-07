@@ -1,32 +1,16 @@
 (ns myrf.events
-  (:require
-   [re-frame.core :as re-frame]
-   [myrf.db :as db]))
+  (:require [ajax.core :as ajax]
+            [day8.re-frame.http-fx]
+            [myrf.db :as db]
+            [myrf.utils.helpers :refer [normalize-db]]
+            [re-frame.core :as re-frame]))
 
-(def mocked-data
-  {:name "generic"
-   :quantity 0
-   :inventory 10
-   :image "no-image.png"
-   :id "1"
-   :price 20
-   :cart-added false})
-
-(defn increase-mocked-data
-  [db data max]
-  (into (:products db)
-        (for [i (range 5 max)] [(str i) data])))
 
 (re-frame/reg-event-fx
  ::initialize-db
  (fn [{:keys [_]} [_ _]]
    {:db db/default-db
-    :fx [[:dispatch [::update-db]]]}))
-
-(re-frame/reg-event-db
- ::update-db
- (fn [db [_ _]]
-   (assoc-in db [:products] (increase-mocked-data db/default-db mocked-data 38))))
+    :fx [[:dispatch [::http-get]]]}))
 
 
 (re-frame/reg-event-db
@@ -68,6 +52,7 @@
      (case page
        :home {:db set-page}
        :cart {:db set-page}
+       :register {:db set-page}
        :login {:db set-page}
        :product  {:db (assoc set-page :active-product slug)}))))
 
@@ -78,5 +63,31 @@
 
 (re-frame/reg-event-db
  ::filter-by-name
- (fn [db [_ name]]
-   (assoc-in db [:filtered] name)))
+ (fn [db [_ title]]
+   (assoc-in db [:filtered] title)))
+
+
+(re-frame/reg-event-fx
+ ::http-get
+ (fn [{:keys [db]} [_ _]]
+   {:db (assoc-in db [:loading] true)
+    :http-xhrio {:method          :get
+                 :uri             "https://fakestoreapi.com/products/"
+                 :format          (ajax/json-request-format)
+                 :response-format (ajax/json-response-format {:keywords? true})
+                 :on-success      [::success-get-result]
+                 :on-failure      [::failure-get-result]}}))
+
+(re-frame/reg-event-db
+ ::success-get-result
+ (fn [db [_ result]]
+   (-> db
+       (assoc-in  [:products]
+                  (normalize-db result))
+       (assoc-in [:loading] false))))
+
+
+(re-frame/reg-event-db
+ ::failure-get-result
+ (fn [db [_ result]]
+   (assoc-in db [:failure] result)))
