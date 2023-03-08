@@ -1,3 +1,3 @@
 (ns myrf.utils.constants)
 
-(def products-columns 4)
+(def products-columns 3)

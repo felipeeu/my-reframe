@@ -1,56 +1,65 @@
 (ns myrf.subs
   (:require
-   [re-frame.core :as re-frame]
-   [myrf.utils.helpers :refer [filter-by-name]]))
+   [re-frame.core :refer [reg-sub]]
+   [myrf.utils.helpers :refer [filter-by-title]]))
 
-
-(re-frame/reg-sub
+(reg-sub
  ::title
  (fn [db [_ product-id]]
    (get-in db [:products product-id :title])))
 
-(re-frame/reg-sub
+(reg-sub
  ::price
  (fn [db [_ product-id]]
    (get-in db [:products product-id :price])))
 
-(re-frame/reg-sub
+(reg-sub
  ::quantity
  (fn [db [_ product-id]]
    (get-in db [:products product-id :quantity])))
 
-(re-frame/reg-sub
+(reg-sub
  ::image
  (fn [db [_ product-id]]
    (get-in db [:products product-id :image])))
 
-(re-frame/reg-sub
+(reg-sub
+ ::rate
+ (fn [db [_ product-id]]
+   (get-in db [:products product-id :rating :rate])))
+
+(reg-sub
+ ::description
+ (fn [db [_ product-id]]
+   (get-in db [:products product-id :description])))
+
+(reg-sub
  ::list-products-ids
  (fn [db]
    (keys (:products db))))
 
-(re-frame/reg-sub
+(reg-sub
  ::cart-quantity
  (fn [db [_ product-id]]
    (get-in db [:cart product-id :quantity])))
 
-(re-frame/reg-sub
+(reg-sub
  ::list-cart-products-ids
  (fn [db]
    (keys (:cart db))))
 
-(re-frame/reg-sub
+(reg-sub
  ::active-page
  (fn [db _]
    (:active-page db)))
 
-(re-frame/reg-sub
+(reg-sub
  ::selected-product
  (fn [db]
    (:selected db)))
 
-(re-frame/reg-sub
+(reg-sub
  ::filtered-data
  (fn [db]
-   (keys (filter-by-name db (:filtered db)))))
+   (keys (filter-by-title db (:filtered db)))))
 

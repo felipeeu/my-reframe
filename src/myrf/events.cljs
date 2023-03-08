@@ -3,37 +3,36 @@
             [day8.re-frame.http-fx]
             [myrf.db :as db]
             [myrf.utils.helpers :refer [normalize-db]]
-            [re-frame.core :as re-frame]))
+            [re-frame.core :refer [reg-event-db reg-event-fx]]))
 
 
-(re-frame/reg-event-fx
+(reg-event-fx
  ::initialize-db
  (fn [{:keys [_]} [_ _]]
    {:db db/default-db
     :fx [[:dispatch [::http-get]]]}))
 
-
-(re-frame/reg-event-db
+(reg-event-db
  ::update-quantity
  (fn [db [_ product-info quantity action]]
    (assoc-in db [:products product-info :quantity] (action quantity))))
 
-(re-frame/reg-event-db
+(reg-event-db
  ::update-cart-quantity
  (fn [db [_ product-info quantity action]]
    (assoc-in db [:cart product-info :quantity] (action quantity))))
 
-(re-frame/reg-event-db
+(reg-event-db
  ::reset-quantity
  (fn [db [_ product-info]]
    (assoc-in db [:products product-info :quantity] 0)))
 
-(re-frame/reg-event-db
+(reg-event-db
  ::register-cart-status
  (fn [db [_ product-info status]]
    (assoc-in db [:products product-info :cart-added] status)))
 
-(re-frame/reg-event-fx
+(reg-event-fx
  ::add-to-cart
  (fn [{:keys [db]} [_ product-info quantity]]
    (let [cart-db  {product-info {:quantity quantity}}]
@@ -41,8 +40,7 @@
        {:db  (assoc db :cart cart-db)
         :fx [[:dispatch [::register-cart-status product-info true]]]} nil))))
 
-
-(re-frame/reg-event-fx
+(reg-event-fx
  ::set-active-page
  (fn [{:keys [db]} [_ {:keys [page slug]}]]
    (let [set-page (assoc db :active-page page)]
@@ -53,18 +51,17 @@
        :login {:db set-page}
        :product  {:db (assoc set-page :active-product slug)}))))
 
-(re-frame/reg-event-db
+(reg-event-db
  ::select-product
  (fn [db [_ product-info]]
    (assoc-in db [:selected] product-info)))
 
-(re-frame/reg-event-db
- ::filter-by-name
+(reg-event-db
+ ::filter-by-title
  (fn [db [_ title]]
    (assoc-in db [:filtered] title)))
 
-
-(re-frame/reg-event-fx
+(reg-event-fx
  ::http-get
  (fn [{:keys [db]} [_ _]]
    {:db (assoc-in db [:loading] true)
@@ -75,7 +72,7 @@
                  :on-success      [::success-get-result]
                  :on-failure      [::failure-get-result]}}))
 
-(re-frame/reg-event-db
+(reg-event-db
  ::success-get-result
  (fn [db [_ result]]
    (-> db
@@ -83,8 +80,7 @@
                   (normalize-db result))
        (assoc-in [:loading] false))))
 
-
-(re-frame/reg-event-db
+(reg-event-db
  ::failure-get-result
  (fn [db [_ result]]
    (assoc-in db [:failure] result)))
