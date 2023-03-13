@@ -35,10 +35,9 @@
 (reg-event-fx
  ::add-to-cart
  (fn [{:keys [db]} [_ product-info quantity]]
-   (let [cart-db  {product-info {:quantity quantity}}]
-     (if (> quantity 0)
-       {:db  (assoc db :cart cart-db)
-        :fx [[:dispatch [::register-cart-status product-info true]]]} nil))))
+   (if (> quantity 0)
+     {:db  (assoc-in db [:cart product-info :quantity] quantity)
+      :fx [[:dispatch [::register-cart-status product-info true]]]} nil)))
 
 (reg-event-fx
  ::set-active-page
