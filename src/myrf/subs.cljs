@@ -54,7 +54,7 @@
    (:active-page db)))
 
 (reg-sub
- ::selected-product
+ ::param-id
  (fn [db]
    (:selected db)))
 
@@ -63,3 +63,12 @@
  (fn [db]
    (keys (filter-by-title db (:filtered db)))))
 
+(reg-sub
+ ::loading
+ (fn [db]
+   (:loading db)))
+
+(reg-sub
+ ::theme
+ (fn [db]
+   (:theme db)))

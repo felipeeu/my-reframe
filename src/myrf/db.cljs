@@ -1,9 +1,11 @@
 (ns myrf.db)
 
-;; (def default-db {:active-page :home})
+(def initial-theme "milligram")
+
+;; (def default-db {:active-page :home :theme initial-theme})
 
 (def default-db {:active-page :home
-                 :theme "skeleton"
+                 :theme initial-theme
                  :loading false
                  :products {1 {:title "test"
                                :price 23}}})

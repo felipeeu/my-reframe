@@ -11,14 +11,14 @@
  (fn [{:keys [_]} [_ _]]
    {:db db/default-db
     :fx [;[:dispatch [::http-get]]
-         ]}))
+         [:dispatch [::change-theme db/initial-theme]]]}))
 
 (reg-event-fx
  ::change-theme
  (fn [{:keys [db]} [_ theme]]
    {:db (assoc-in db [:theme] theme)
     :fx (.setAttribute (.getElementById js/document "html-tag") "data-theme" theme)}))
-;; 
+
 
 (reg-event-db
  ::update-quantity
