@@ -10,7 +10,15 @@
  ::initialize-db
  (fn [{:keys [_]} [_ _]]
    {:db db/default-db
-    :fx [[:dispatch [::http-get]]]}))
+    :fx [;[:dispatch [::http-get]]
+         ]}))
+
+(reg-event-fx
+ ::change-theme
+ (fn [{:keys [db]} [_ theme]]
+   {:db (assoc-in db [:theme] theme)
+    :fx (.setAttribute (.getElementById js/document "html-tag") "data-theme" theme)}))
+;; 
 
 (reg-event-db
  ::update-quantity
@@ -41,14 +49,14 @@
 
 (reg-event-fx
  ::set-active-page
- (fn [{:keys [db]} [_ {:keys [page slug]}]]
+ (fn [{:keys [db]} [_ {:keys [product page]}]]
    (let [set-page (assoc db :active-page page)]
      (case page
        :home {:db set-page}
        :cart {:db set-page}
        :register {:db set-page}
        :login {:db set-page}
-       :product  {:db (assoc set-page :active-product slug)}))))
+       :product  {:db (assoc set-page :active-product product)}))))
 
 (reg-event-db
  ::select-product

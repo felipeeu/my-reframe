@@ -1,14 +1,18 @@
 (ns myrf.views
-  (:require
-   [myrf.components.cart :refer [cart-table]]
-   [myrf.components.product :refer [add-to-cart-button product
-                                    product-information]]
-   [myrf.components.quantity-selector :refer [quantity-component]]
-   [myrf.events :as events]
-   [myrf.router :as router]
-   [myrf.subs :as subs]
-   [myrf.utils.constants :refer [products-columns]]
-   [re-frame.core :refer [subscribe dispatch-sync]]))
+  (:require [myrf.components.cart :refer [cart-table]]
+            [myrf.components.product :refer [add-to-cart-button product
+                                             product-information]]
+            [myrf.components.quantity-selector :refer [quantity-component]]
+            [myrf.components.theme :refer [theme-selector]]
+            [myrf.events :as events]
+            [myrf.router :as router]
+            [myrf.subs :as subs]
+            [myrf.utils.constants :refer [products-columns]]
+            [re-frame.core :refer [dispatch-sync subscribe]]))
+
+(defn loader
+  []
+  [:div {:class "mt-2 pt-2 mx-auto w-25 text-center"} "Loading ..."])
 
 (defn header-page
   [cart-product-ids]
@@ -17,6 +21,7 @@
     [:li [:a {:href (router/url-for :home)}  "back"]]
     [:li [:input {:on-change (fn [e]
                                (dispatch-sync [::events/filter-by-title (-> e .-target .-value)]))}]]
+    [:li [theme-selector]]
     (if (empty? cart-product-ids) nil
         [:li {:class "pr-2 mt-05 float-right"}
          [:a {:href (router/url-for :cart)}  "cart"]])
@@ -43,18 +48,20 @@
         products-panel (if (< count-ids products-columns)
                          mapped-products
                          (partition-all products-columns mapped-products))]
+
     products-panel))
 
 (defn render-products
   "Render products and split lines into colums"
   [products-columns]
   (let [product-ids  @(subscribe [::subs/list-products-ids])
-        filtered-id @(subscribe [::subs/filtered-data])]
-    [:div
-     (->> (split-products-into-columns product-ids products-columns filtered-id)
-          (map (fn [%] [:div {:key (random-uuid)
-                              :class "row pt-2 text-center"} %]))
-          (doall))]))
+        filtered-id @(subscribe [::subs/filtered-data])
+        loading @(subscribe [::subs/loading])]
+    (if loading (loader) [:div
+                          (->> (split-products-into-columns product-ids products-columns filtered-id)
+                               (map (fn [%] [:div {:key (random-uuid)
+                                                   :class "row pt-2 text-center"} %]))
+                               (doall))])))
 
 (defn render-cart
   "Render cart table with products"
@@ -66,8 +73,9 @@
 ;------- product page ------ 
 (defn product-details
   "Product page routed when a product is clicked"
-  [selected-product-id]
-  (let [title @(subscribe [::subs/title selected-product-id])
+  []
+  (let [selected-product-id @(subscribe [::subs/param-id])
+        title @(subscribe [::subs/title selected-product-id])
         price @(subscribe [::subs/price selected-product-id])
         quantity @(subscribe [::subs/quantity selected-product-id])
         image @(subscribe [::subs/image selected-product-id])
@@ -106,24 +114,26 @@
    [:div  [:span "repeat password:"] [:input]]
    [:button {:class "m-0 mt-1 w-100"} "Register"]])
 
+
+
 (defn pages
   "Switch to pages"
   [page-name]
-  (let [selected-product-id @(subscribe [::subs/selected-product])]
-    (case page-name
-      :home [render-products products-columns]
-      :cart [render-cart]
-      :product [product-details selected-product-id]
-      :login  [login]
-      :register [register]
-      [render-products  products-columns])))
+  (case page-name
+    :home [render-products products-columns]
+    :cart [render-cart]
+    :product [product-details]
+    :login  [login]
+    :register [register]
+    [render-products  products-columns]))
+
+
 
 (defn main-panel
   "Main function"
   []
   (let [active-page @(subscribe [::subs/active-page])
         cart-product-ids @(subscribe [::subs/list-cart-products-ids])]
-
     [:div {:class "bg-secondary"}
      [:header [header-page cart-product-ids]]
      [pages active-page]
