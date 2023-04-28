@@ -15,8 +15,9 @@
 (defn theme-selector
   []
   (let [selected-theme @(subscribe [::subs/theme])]
-
-    [:select {:value selected-theme :on-change (fn [evt]
-                                                 (dispatch [::events/change-theme (-> evt .-target .-value)]))}
-     (map  #(theme-options %) theme-list)]))
+    [:div
+     [:label {:for "theme"} " theme:"]
+     [:select {:name "theme" :value selected-theme :on-change (fn [evt]
+                                                                (dispatch [::events/change-theme (-> evt .-target .-value)]))}
+      (map  #(theme-options %) theme-list)]]))
 

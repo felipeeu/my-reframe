@@ -3,33 +3,15 @@
             [myrf.components.product :refer [add-to-cart-button product
                                              product-information]]
             [myrf.components.quantity-selector :refer [quantity-component]]
-            [myrf.components.theme :refer [theme-selector]]
-            [myrf.events :as events]
-            [myrf.router :as router]
+            [myrf.components.header :refer [header-page]]
             [myrf.subs :as subs]
             [myrf.utils.constants :refer [products-columns]]
-            [re-frame.core :refer [dispatch-sync subscribe]]))
+            [re-frame.core :refer [subscribe]]))
 
 (defn loader
   []
   [:div {:class "mt-2 pt-2 mx-auto w-25 text-center"} "Loading ..."])
 
-(defn header-page
-  [cart-product-ids]
-  [:nav
-   [:ul
-    [:li [:a {:href (router/url-for :home)}  "back"]]
-    [:li [:input {:on-change (fn [e]
-                               (dispatch-sync [::events/filter-by-title (-> e .-target .-value)]))}]]
-    [:li [theme-selector]]
-    (if (empty? cart-product-ids) nil
-        [:li {:class "pr-2 mt-05 float-right"}
-         [:a {:href (router/url-for :cart)}  "cart"]])
-    (if false
-      [:li {:class "pr-2 mt-05 float-right"}
-       [:a {:href (router/url-for :login)}  "login"]]
-      [:li {:class "pr-2 mt-05 float-right"}
-       [:a {:href (router/url-for :register)}  "register"]])]])
 
 (defn footer-content
   []
