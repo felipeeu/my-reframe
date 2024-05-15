@@ -39,7 +39,7 @@
   (let [product-ids  @(subscribe [::subs/list-products-ids])
         filtered-id @(subscribe [::subs/filtered-data])
         loading @(subscribe [::subs/loading])]
-    (if loading (loader) [:div
+    (if loading (loader) [:div {:class "pt-2"}
                           (->> (split-products-into-columns product-ids products-columns filtered-id)
                                (map (fn [%] [:div {:key (random-uuid)
                                                    :class "row pt-2 text-center"} %]))

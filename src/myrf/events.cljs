@@ -10,7 +10,7 @@
  ::initialize-db
  (fn [{:keys [_]} [_ _]]
    {:db db/default-db
-    :fx [;[:dispatch [::http-get]]
+    :fx [[:dispatch [::http-get]]
          [:dispatch [::change-theme db/initial-theme]]]}))
 
 (reg-event-fx
